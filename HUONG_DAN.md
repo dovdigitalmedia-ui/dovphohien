@@ -1,61 +1,54 @@
 # DOV PHỐ HIẾN — Trang tuyển dụng Sale Bất Động Sản
 
-Trang landing 1 trang (single page), responsive, HTML/CSS/JS thuần — **không cần framework, không cần backend**.
+Trang landing 1 trang (single page), responsive, HTML/CSS/JS thuần — **không cần framework**.
 
 ## 1. Chạy ngay
-- Mở thẳng file **`index.html`** bằng trình duyệt (nhấp đúp) là chạy được.
-- Ảnh và logo đã được **nhúng sẵn vào file** (base64) nên không lo lỗi đường dẫn khi gửi/đăng tải.
-- Cần internet lần đầu để tải font Google (Playfair Display, Montserrat, Roboto). Nếu offline, trang vẫn hiển thị với font hệ thống.
+- Mở thẳng file **`index.html`** bằng trình duyệt là chạy được.
+- Logo và ảnh đã **nhúng sẵn vào file** nên không lo lỗi đường dẫn.
+- Cần internet lần đầu để tải font Google; offline vẫn hiển thị bằng font hệ thống.
 
-## 2. Sửa nội dung tiếng Việt
-Mở `index.html` bằng Notepad / VS Code, tìm nhanh theo nhãn comment `<!-- ... -->`:
+## 2. Nút "Ứng tuyển" → mở form dạng popup
+- Mọi nút "Ứng tuyển" (nút nổi nhấp nháy, header, hero, menu mobile, footer, thẻ trong mục Ứng tuyển) đều **mở popup form ngay khi bấm**.
+- Popup có **logo + tiêu đề DOV Phố Hiến** ở đầu, đóng bằng nút ✕, bấm ra ngoài hoặc phím **Esc**.
+- Gửi thành công → hiện lời cảm ơn và **tự đóng sau 2,5 giây**.
 
-| Mục | Tìm chữ |
-|---|---|
-| Tiêu đề Hero | `============ HERO ============` |
-| Giới thiệu công ty | `============ GIỚI THIỆU ============` |
-| Thu nhập & lợi ích | `============ THU NHẬP` |
-| Lộ trình thăng tiến (mức lương) | `============ LỘ TRÌNH` |
-| Yêu cầu ứng viên | `============ YÊU CẦU ============` |
-| Câu nói CEO | `============ THÔNG ĐIỆP CEO` |
-| Địa chỉ 4 văn phòng | `============ VĂN PHÒNG ============` |
-| Hotline & form | `============ ỨNG TUYỂN ============` |
-| Footer | `============ FOOTER ============` |
+## 3. ⭐ NỐI FORM VỚI GOOGLE SHEET (quan trọng)
+Trang web tĩnh **không thể tự ghi vào Google Sheet chỉ bằng đường link** — cần tạo 1 "cửa nhận dữ liệu" miễn phí bằng Google Apps Script (làm 1 lần, ~3 phút):
 
-Số hotline đang dùng: **0924.89.1111** và **0977.418.222** (đổi cả phần `href="tel:..."` lẫn chữ hiển thị).
+1. Mở file **`google-apps-script.gs`** kèm theo và làm **đúng 8 bước** ghi trong đó. Tóm tắt:
+   - Vào Sheet của bạn → **Tiện ích mở rộng › Apps Script**.
+   - Dán toàn bộ nội dung file `.gs` → **Lưu**.
+   - **Triển khai › Bản triển khai mới › Ứng dụng web**, chọn *Execute as: Me*, *Access: Anyone* → **Triển khai** → cấp quyền.
+   - **Copy URL** dạng `https://script.google.com/macros/s/..../exec`.
+2. Mở **`index.html`**, tìm dòng (gần cuối, trong thẻ `<script>`):
+   ```js
+   var SHEET_ENDPOINT = "";
+   ```
+   Dán URL vừa copy vào giữa hai dấu ngoặc kép:
+   ```js
+   var SHEET_ENDPOINT = "https://script.google.com/macros/s/AKfyc..../exec";
+   ```
+3. Lưu lại. Xong! Mỗi lần có người ứng tuyển, một dòng mới tự xuất hiện trong Sheet
+   (ID Sheet của bạn đã được điền sẵn trong file `.gs`).
 
-## 3. Đổi màu & font
-Toàn bộ màu/font khai báo ở đầu thẻ `<style>`, trong khối `:root{ ... }`:
-```css
---navy:#1a365d;     /* xanh navy chủ đạo */
---gold:#d4af37;     /* vàng gold */
---mist:#f7f7f7;     /* nền xám nhạt */
---f-display: ...    /* font tiêu đề sang trọng */
-```
-Đổi 1 giá trị ở đây, toàn trang tự cập nhật.
+> Khi để trống `SHEET_ENDPOINT`, form vẫn chạy và hiện lời cảm ơn nhưng **chưa gửi đi đâu** — tiện để xem thử giao diện.
+> Dữ liệu ghi vào Sheet gồm các cột: Thời gian · Họ và tên · Số điện thoại · Email · Vị trí ứng tuyển · Mức lương mong muốn · Khu vực làm việc · Kinh nghiệm · Ghi chú.
 
-## 4. Thay logo / ảnh
-**Cách A — đơn giản (giữ kiểu nhúng):** mình đã tối ưu sẵn ảnh trong thư mục `assets/`
-(`logo.webp`, `poster-recruit.webp`, `poster-income.webp`, `poster-culture.webp`, `poster-ceo.webp`).
-Muốn thay ảnh mới: bảo mình "nhúng lại ảnh này" kèm file, mình sẽ build lại `index.html`.
+## 4. Các trường trong form
+Họ và tên (bắt buộc) · Số điện thoại (bắt buộc) · Email · Vị trí ứng tuyển (bắt buộc) · Mức lương mong muốn · Khu vực làm việc (bắt buộc) · Kinh nghiệm · Ghi chú.
+Muốn thêm/bớt lựa chọn trong các ô chọn (vị trí, mức lương, khu vực…), sửa các thẻ `<option>` trong form ở `index.html`.
 
-**Cách B — dùng file ảnh rời:** thay các chuỗi `src="data:image..."` rất dài bằng đường dẫn file, ví dụ:
-```html
-<img src="assets/logo.webp" ... >
-<img src="assets/poster-recruit.webp" ... >
-```
-rồi để file `index.html` cùng thư mục với `assets/`. Cách này giúp file HTML nhẹ hơn nhiều.
+## 5. Sửa nội dung / màu / font
+- Nội dung tiếng Việt nằm trực tiếp trong HTML, tìm theo comment `<!-- ... -->` (HERO, GIỚI THIỆU, THU NHẬP, LỘ TRÌNH, YÊU CẦU, VĂN PHÒNG, ỨNG TUYỂN, FOOTER).
+- Màu & font khai báo ở khối `:root{ }` đầu thẻ `<style>` (navy `#1a365d`, gold `#d4af37`…). Đổi 1 dòng là toàn trang đổi theo.
+- Số hotline: sửa cả phần `href="tel:..."` lẫn chữ hiển thị.
 
-> Ảnh nên để **dạng vuông** (poster) hoặc **tròn** (logo). Nếu ảnh quá nặng, nén về WebP ~1000px, chất lượng 70–75 là đẹp và nhẹ.
+## 6. Thay logo / ảnh
+- Ảnh tối ưu sẵn nằm trong thư mục `assets/`. Muốn thay ảnh mới, gửi mình ảnh để nhúng lại, hoặc tự thay chuỗi `src="data:image..."` bằng đường dẫn file (ví dụ `src="assets/poster-recruit.webp"`) rồi để `index.html` cùng thư mục `assets/`.
 
-## 5. Đăng lên mạng (miễn phí)
-- **Netlify:** vào netlify.com → kéo–thả cả thư mục (gồm `index.html` + `assets/`) vào ô Deploy → có link ngay.
-- **GitHub Pages:** tạo repo → upload file → Settings › Pages › chọn nhánh `main` › Save.
-- **Hosting thường (cPanel):** upload vào thư mục `public_html/`.
-
-## 6. Lưu ý
-- **Form ứng tuyển** hiện chỉ mô phỏng (kiểm tra dữ liệu + hiện thông báo cảm ơn), **chưa gửi về email/server**. Muốn nhận đơn thật, có thể nối Google Form, Formspree, hoặc API riêng — mình hỗ trợ thêm khi cần.
-- Section **"Lộ trình thăng tiến"** được dựng lại bằng HTML (thay vì dùng ảnh poster) để hiển thị sắc nét và co giãn tốt trên điện thoại; số liệu lấy đúng từ poster của bạn.
-- Trang đã hỗ trợ: cuộn mượt, hiệu ứng xuất hiện khi cuộn, menu hamburger trên mobile, nút gọi/Zalo nổi, tôn trọng chế độ giảm chuyển động, và phím Tab điều hướng rõ ràng.
+## 7. Đăng lên mạng (miễn phí)
+- **Netlify:** netlify.com → kéo–thả cả thư mục (gồm `index.html` + `assets/`) → có link ngay.
+- **GitHub Pages:** tạo repo → upload → Settings › Pages › chọn nhánh → Save.
+- **Hosting cPanel:** upload vào `public_html/`.
 
 © 2026 DOV PHỐ HIẾN.
